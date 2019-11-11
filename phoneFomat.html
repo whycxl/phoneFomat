@@ -1,0 +1,81 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>phoneFamart</title>
+</head>
+<style>
+    #phoneNumberBox {
+        border-bottom: 1px solid #ccc;
+        display: inline;
+    }
+
+    #countryCode {
+        border: none;
+    }
+
+    #phoneNumber {
+        border: none;
+
+    }
+</style>
+
+<body>
+    <div id="phoneNumberBox">
+        <select name="" id="countryCode">
+            <option value="+1" data-famt="(xxx) xxx-xxxx" data-length="10">+1</option>
+            <option value="+86" data-famt="(xxx) xxxx-xxxx" data-length="11">+86</option>
+        </select>
+        <input id="phoneNumber" placeholder="请输入电话号码" />
+    </div>
+
+</body>
+<script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+
+<script>
+    var phoneNumDom = $("#phoneNumber");
+    //手机号码输入框失焦
+    phoneNumDom.on("blur", function () {
+        if (phoneNumDom.val()) {
+            phoneFamart();
+        }
+    })
+    //国家码change事件
+    $("#countryCode").on("change", function () {
+        if (phoneNumDom.val()) {
+            phoneFamart();
+        }
+    })
+
+    function phoneFamart() {
+        //1、获取地区和电话号码
+        var phoneNum = phoneNumDom.val();
+        var selectCountryDom = $("#countryCode option:selected");
+        var selectCountryCode = selectCountryDom.val();
+        var phoneFamart = selectCountryDom.attr("data-famt");
+        var phoneNumLength = selectCountryDom.attr("data-length");
+        //2、处理电话号码为纯数字
+        var notPhoneNumReg = /\D/g; //\D 查找非数字字符
+        var n = phoneNum.replace(notPhoneNumReg, "");
+        //3、获取地区对应的格式，用数字代替
+        var l, p = n.split("");
+        if (p.length && p.length <= phoneNumLength) {
+            var v = -1;
+            phoneFamart = phoneFamart.replace(/x/g, function (e) {
+                return v += 1,
+                    p[v] || e
+            })
+            l = phoneFamart.split("x")[0],
+                n = l || n;
+            phoneNumDom.val(n);
+        } else {
+            //输入的手机号码不合法
+            phoneNumDom.val(n);
+            alert("请正确输入")
+        }
+    }
+</script>
+
+</html>
